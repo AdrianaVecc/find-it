@@ -91,7 +91,7 @@ public class SqlHelper extends SQLiteOpenHelper {
         public void saveRememberItem(RememberItem item){
         	RememberItem old=findRememberItem(item.getTag());
         	if(old!=null){
-        		db.delete("remember", "tag = ?", new String[] {item.getTag()});	
+        		deleteRememberItem(old);
         	}
         	ContentValues values = new ContentValues();
             values.put("tag", item.getTag());
@@ -103,10 +103,8 @@ public class SqlHelper extends SQLiteOpenHelper {
         }
         
         public void deleteRememberItem(RememberItem item){
-        	findRememberItem(item.getTag());
-        	db.delete("remember", "tag = ?", new String[] {item.getTag()});	
-//        	item = new RememberItem();
-//        	item = null;
+        	long resultCount=db.delete("remember", "tag = ?", new String[] {item.getTag()});
+            return resultCount!=0;
         }
 
         

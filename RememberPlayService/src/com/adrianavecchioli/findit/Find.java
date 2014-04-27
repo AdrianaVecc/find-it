@@ -29,6 +29,7 @@ import com.google.android.glass.widget.CardScrollView;
 
 public class Find extends Activity implements Callback {
 
+    private RememberItem itemSelected;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,9 +87,8 @@ public class Find extends Activity implements Callback {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				Card card=(Card)adapter.getItem(arg2);
-				RememberItem item=SqlHelper.getInstance(getApplicationContext()).findRememberItem(card.getText().toString());
+		            itemSelected=SqlHelper.getInstance(getApplicationContext()).findRememberItem(card.getText().toString());
 				openOptionsMenu();
-				//launchGoogleMap(item);
 				
 			}
 		});
@@ -121,35 +121,26 @@ public class Find extends Activity implements Callback {
 	    inflater.inflate(R.menu.saveditemmenu, menu);
 	    return true;
 	}
-		
-	public boolean onOptionsItemSelected(MenuItem menuitem, RememberItem item) {
-	    switch (menuitem.getItemId()) {
+
+    @Override
+	public boolean onOptionsItemSelected(MenuItem menuitem) {
+	    if(itemSelected==null){
+            return super.onOptionsItemSelected(menuitem);
+        }
+        switch (menuitem.getItemId()) {
 	        case R.id.menu_getdirections:
-	        	launchGoogleMap(item);
-	            return true;
+                launchGoogleMap(item);
+                return true;
 	        case R.id.menu_delete:
-	            SqlHelper.getInstance(getApplication()).deleteRememberItem(item);
-				showSucessDeleteCard(item);
+                   boolean result= SqlHelper.getInstance(getApplication()).deleteRememberItem(item);
+                    if(result){
+                        showSucessDeleteCard(item);
+                    }
+
 	            return true;
 	        default:
-	            return super.onOptionsItemSelected(menuitem);
+                return super.onOptionsItemSelected(menuitem);
 	    }
 	}
-	
-	
-	
-//	   @Override
-//	    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//	          if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-//	              openOptionsMenu();
-//	              return true;
-//	          }
-//	          return false;
-//	    }
-//	
-//    @Override
-//    public void onOptionsMenuClosed(Menu menu) {
-//        finish();
-//    }
 }
  
