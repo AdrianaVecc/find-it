@@ -129,12 +129,12 @@ public class Find extends Activity implements Callback {
         }
         switch (menuitem.getItemId()) {
 	        case R.id.menu_getdirections:
-                launchGoogleMap(item);
+                launchGoogleMap(itemSelected);
                 return true;
 	        case R.id.menu_delete:
-                   boolean result= SqlHelper.getInstance(getApplication()).deleteRememberItem(item);
+                   boolean result= SqlHelper.getInstance(getApplication()).deleteRememberItem(itemSelected);
                     if(result){
-                        showSucessDeleteCard(item);
+                        showSucessDeleteCard(itemSelected);
                     }
 
 	            return true;
