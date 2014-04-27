@@ -102,7 +102,7 @@ public class SqlHelper extends SQLiteOpenHelper {
             
         }
         
-        public void deleteRememberItem(RememberItem item){
+        public boolean deleteRememberItem(RememberItem item){
         	long resultCount=db.delete("remember", "tag = ?", new String[] {item.getTag()});
             return resultCount!=0;
         }
