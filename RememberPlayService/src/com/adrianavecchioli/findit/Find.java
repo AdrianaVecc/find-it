@@ -68,29 +68,6 @@ public class Find extends Activity implements Callback {
 		}
 
 	}
-
-	/**
-	 * Get Rememberitem tag from intent. tag should be set from livecard or by
-	 * voice trigger
-	 * 
-	 * @param intent
-	 * @return tag
-	 */
-	private RememberItem retrieveTagFromIntent(Intent intent) {
-
-		if (item != null) {
-			return item;
-		}
-
-		String tag = getIntent().getStringExtra(
-				LiveCardService.KEY_REMEMBER_ITEM);
-		if (tag == null) {
-
-		}
-		return tag;
-
-	}
-
 	private void displayFailureView() {
 		Card fail = new Card(this);
 		fail.setText(R.string.storefailhead);
