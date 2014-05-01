@@ -20,6 +20,7 @@ import android.view.View;
 import com.adrianavecchioli.findit.db.SqlHelper;
 import com.adrianavecchioli.findit.domain.RememberItem;
 import com.adrianavecchioli.findit.service.LocationServiceConnector;
+import com.adrianavecchioli.findit.util.RememberUtils;
 import com.google.android.glass.app.Card;
 import com.google.android.glass.app.Card.ImageLayout;
 import com.google.android.glass.media.CameraManager;
@@ -40,7 +41,9 @@ public class Remember extends Activity implements Callback{
 		setContentView(failView);
 		locationServiceConnector=new LocationServiceConnector();
 		locationServiceConnector.bind(this);
-		
+		RememberItem rememberItem = SqlHelper.getInstance(this)
+				.latestRememberItem();
+		RememberUtils.startLiveCardService(this, rememberItem);
 	}
 	
 	@Override
@@ -139,6 +142,7 @@ public class Remember extends Activity implements Callback{
 		card.addImage(BitmapFactory.decodeFile(item.getImagePath()));
 		card.setFootnote(item.getTag());
 		setContentView(card.getView());
+		RememberUtils.sendAddRememberItemBroadcast(this, item);
 		Handler handler=new Handler(this);
 		handler.sendEmptyMessageDelayed(0, 3000);
 	}

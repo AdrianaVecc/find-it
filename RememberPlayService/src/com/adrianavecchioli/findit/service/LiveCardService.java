@@ -17,15 +17,19 @@ import android.widget.RemoteViews.RemoteView;
 import com.adrianavecchioli.findit.Find;
 import com.adrianavecchioli.findit.db.SqlHelper;
 import com.adrianavecchioli.findit.domain.RememberItem;
+import com.adrianavecchioli.findit.receiver.AddBroadcastReceiver;
+import com.adrianavecchioli.findit.receiver.LiveCardUpdateListener;
 import com.google.android.glass.app.Card;
 import com.google.android.glass.app.Card.ImageLayout;
 import com.google.android.glass.timeline.LiveCard;
 import com.google.android.glass.timeline.LiveCard.PublishMode;
 
-public class LiveCardService extends Service implements Callback {
+public class LiveCardService extends Service implements LiveCardUpdateListener{
 	private LiveCard mLiveCard;
 	public static final String LIVE_CARD_TAG="livecardTag";
 	public static final String KEY_REMEMBER_ITEM="remember_item_key";
+	
+	private AddBroadcastReceiver addBroadcastReceiver;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -33,6 +37,8 @@ public class LiveCardService extends Service implements Callback {
 		mLiveCard = new LiveCard(this,LIVE_CARD_TAG);
 		updateLiveCardWithRememberItem(mLiveCard,item);
 		mLiveCard.publish(PublishMode.REVEAL);
+		addBroadcastReceiver=new AddBroadcastReceiver(this);
+		registerReceiver(addBroadcastReceiver, AddBroadcastReceiver.getIntentFilter());
 		return START_STICKY;
 	}
 	@Override
@@ -43,29 +49,20 @@ public class LiveCardService extends Service implements Callback {
         mLiveCard.setViews(createLiveCardRemoteView(item));
         mLiveCard.setAction(createIntentHandler(item));
 	}
-	@Override
-	public boolean handleMessage(Message msg) {
-		if(msg!=null && msg.obj instanceof RememberItem){
-			RememberItem item=(RememberItem)msg.obj;
-			updateLiveCardWithRememberItem(mLiveCard,item);
-			mLiveCard.publish(PublishMode.REVEAL);
-		}
-		
-		return false;
-	}
-    @Override
+	
     public void onDestroy() {
         if (mLiveCard != null && mLiveCard.isPublished()) {
             mLiveCard.unpublish();
             mLiveCard = null;
         }
+        unregisterReceiver(addBroadcastReceiver);
         super.onDestroy();
     }
     
 
 	private PendingIntent createIntentHandler(RememberItem item) {
 		Intent menuIntent = new Intent(this, Find.class);
-        menuIntent.putExtra(Find.LIVE_CARD_TAG, item.getTag());
+        menuIntent.putExtra(KEY_REMEMBER_ITEM, item);
         menuIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
             Intent.FLAG_ACTIVITY_CLEAR_TASK);
        return  PendingIntent.getActivity(
@@ -73,7 +70,12 @@ public class LiveCardService extends Service implements Callback {
 	}
 	private RemoteViews createLiveCardRemoteView(RememberItem item2) {
 		RemoteViews mLiveCardView = new RemoteViews(getPackageName(),
-            R.layout.remote_layout);
-        mLiveCardView.setTextViewText(R.id.text1,item2.getTag());
+            R.layout.remote_card_view_file);
+        mLiveCardView.setTextViewText(R.id.tag_text,item2.getTag());
+	}
+	@Override
+	public void onRememberItemAdded(RememberItem item) {
+		updateLiveCardWithRememberItem(mLiveCard,item);
+		mLiveCard.publish(PublishMode.REVEAL);
 	}
 }

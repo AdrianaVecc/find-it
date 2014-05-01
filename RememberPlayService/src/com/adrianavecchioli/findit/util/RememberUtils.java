@@ -1,5 +1,10 @@
 package com.adrianavecchioli.findit.util;
 
+import com.adrianavecchioli.findit.domain.RememberItem;
+import com.adrianavecchioli.findit.receiver.AddBroadcastReceiver;
+import com.adrianavecchioli.findit.service.LiveCardService;
+
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -74,5 +79,17 @@ public class RememberUtils {
 		options.inSampleSize=4;
 		return BitmapFactory.decodeFile(filePath, options);
 	}
+	public static void startLiveCardService(Context context,RememberItem item){
+		Intent service=new Intent(context,LiveCardService.class);
+		service.putExtra(LiveCardService.KEY_REMEMBER_ITEM, item);
+		context.startService(service);
+	}
+	
+	public static void sendAddRememberItemBroadcast(Context context,RememberItem item){
+		Intent brodacastIntent=new Intent(AddBroadcastReceiver.ACTION);
+		brodacastIntent.putExtra(LiveCardService.KEY_REMEMBER_ITEM, item);
+		context.startService(brodacastIntent);
+	}
+	
 
 }

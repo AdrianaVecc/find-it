@@ -23,6 +23,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.adrianavecchioli.findit.adapter.ScrollAdapter;
 import com.adrianavecchioli.findit.db.SqlHelper;
 import com.adrianavecchioli.findit.domain.RememberItem;
+import com.adrianavecchioli.findit.service.LiveCardService;
 import com.adrianavecchioli.findit.util.RememberUtils;
 import com.google.android.glass.app.Card;
 import com.google.android.glass.app.Card.ImageLayout;
@@ -30,43 +31,66 @@ import com.google.android.glass.widget.CardScrollView;
 
 public class Find extends Activity implements Callback {
 
-    private RememberItem itemSelected;
-    private static final String LIVE_CARD_TAG="livecardtag_selected";
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        String tag=retrieveTagFromIntent(getIntent());
-        RememberItem item=SqlHelper.getInstance(this).findRememberItem(tag);
-        if(item!=null){
-        	List<RememberItem> items=new ArrayList<RememberItem>();
-        	items.add(item);
-        	displayRememberItems(items);
-        } else{
-        	if(RememberUtils.EVERY_THING.equalsIgnoreCase(tag)){
-            	List<RememberItem> items=SqlHelper.getInstance(this).findAllRememberItem();
-            	displayRememberItems(items);
-            }
-        	else{
-        		displayFailureView();
-        	}
-        }
-    }
+	private RememberItem itemSelected;
 
-    /**
-     * Get Rememberitem tag from intent. tag should be set from livecard or by voice trigger
-     * @param intent
-     * @return tag 
-     */
-    private  String  retrieveTagFromIntent(Intent intent){
-    	String tag= getIntent().getStringExtra(LIVE_CARD_TAG);
-    	if(tag==null){
-    		ArrayList<String> voiceResults = getIntent().getExtras().getStringArrayList(RecognizerIntent.EXTRA_RESULTS);
-            tag= voiceResults.get(0);	
-    	}
-    	return tag;
-    	
-    	
-    }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		RememberItem item = getIntent().getParcelableExtra(
+				LiveCardService.KEY_REMEMBER_ITEM);
+		String tag = null;
+		if (item == null) {
+			ArrayList<String> voiceResults = getIntent().getExtras()
+					.getStringArrayList(RecognizerIntent.EXTRA_RESULTS);
+			if (voiceResults != null && !voiceResults.isEmpty()) {
+				tag = voiceResults.get(0);
+				item = SqlHelper.getInstance(this).findRememberItem(tag);
+			}
+		}
+		if (item != null) {
+			List<RememberItem> items = new ArrayList<RememberItem>();
+			items.add(item);
+			displayRememberItems(items);
+			this.itemSelected = item;
+		} else {
+			if (RememberUtils.EVERY_THING.equalsIgnoreCase(tag)) {
+				List<RememberItem> items = SqlHelper.getInstance(this)
+						.findAllRememberItem();
+				displayRememberItems(items);
+			} else {
+				displayFailureView();
+			}
+		}
+		RememberItem rememberItem = SqlHelper.getInstance(this)
+				.latestRememberItem();
+		if (rememberItem != null) {
+			RememberUtils.startLiveCardService(this, rememberItem);
+		}
+
+	}
+
+	/**
+	 * Get Rememberitem tag from intent. tag should be set from livecard or by
+	 * voice trigger
+	 * 
+	 * @param intent
+	 * @return tag
+	 */
+	private RememberItem retrieveTagFromIntent(Intent intent) {
+
+		if (item != null) {
+			return item;
+		}
+
+		String tag = getIntent().getStringExtra(
+				LiveCardService.KEY_REMEMBER_ITEM);
+		if (tag == null) {
+
+		}
+		return tag;
+
+	}
+
 	private void displayFailureView() {
 		Card fail = new Card(this);
 		fail.setText(R.string.storefailhead);
@@ -76,6 +100,7 @@ public class Find extends Activity implements Callback {
 		View failView = fail.getView();
 		setContentView(failView);
 	}
+
 	private Card createCardOfRememberItem(RememberItem item) {
 		Card card = new Card(this);
 		card.setText(item.getTag());
@@ -84,79 +109,81 @@ public class Find extends Activity implements Callback {
 		card.addImage(BitmapFactory.decodeFile(item.getImagePath()));
 		return card;
 	}
+
 	private void launchGoogleMap(RememberItem item) {
-		Location location=item.getLocation();
-		Intent intent=RememberUtils.getGeoIntentFromLocation(location);
+		Location location = item.getLocation();
+		Intent intent = RememberUtils.getGeoIntentFromLocation(location);
 		Find.this.startActivity(intent);
 	}
+
 	private void displayRememberItems(final List<RememberItem> items) {
 		List<Card> mCards = new ArrayList<Card>();
-		 for(RememberItem item: items){
-			 Card card=createCardOfRememberItem(item);
-			 mCards.add(card);
-		 }
+		for (RememberItem item : items) {
+			Card card = createCardOfRememberItem(item);
+			mCards.add(card);
+		}
 		CardScrollView mCardScrollView = new CardScrollView(this);
 		final ScrollAdapter adapter = new ScrollAdapter(mCards);
 		mCardScrollView.setOnItemClickListener(new OnItemClickListener() {
-			
-						@Override
+
+			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				Card card=(Card)adapter.getItem(arg2);
-		            itemSelected=SqlHelper.getInstance(getApplicationContext()).findRememberItem(card.getText().toString());
+				Card card = (Card) adapter.getItem(arg2);
+				itemSelected = SqlHelper.getInstance(getApplicationContext())
+						.findRememberItem(card.getText().toString());
 				openOptionsMenu();
-				
+
 			}
 		});
-		
+
 		mCardScrollView.setAdapter(adapter);
 		mCardScrollView.activate();
 		setContentView(mCardScrollView);
 	}
 
-	private void showSucessDeleteCard(RememberItem item){
+	private void showSucessDeleteCard(RememberItem item) {
 		Card card = new Card(this);
 		card.setText(R.string.object_delete);
 		card.setImageLayout(ImageLayout.FULL);
 		card.addImage(R.drawable.finditlogobg);
 		setContentView(card.getView());
-		Handler handler=new Handler(this);
+		Handler handler = new Handler(this);
 		handler.sendEmptyMessageDelayed(0, 3000);
 	}
-	
+
 	@Override
 	public boolean handleMessage(Message msg) {
 		finish();
 		return false;
 	}
 
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.saveditemmenu, menu);
-	    return true;
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.saveditemmenu, menu);
+		return true;
 	}
 
-    @Override
+	@Override
 	public boolean onOptionsItemSelected(MenuItem menuitem) {
-	    if(itemSelected==null){
-            return super.onOptionsItemSelected(menuitem);
-        }
-        switch (menuitem.getItemId()) {
-	        case R.id.menu_getdirections:
-                launchGoogleMap(itemSelected);
-                return true;
-	        case R.id.menu_delete:
-                   boolean result= SqlHelper.getInstance(getApplication()).deleteRememberItem(itemSelected);
-                    if(result){
-                        showSucessDeleteCard(itemSelected);
-                    }
+		if (itemSelected == null) {
+			return super.onOptionsItemSelected(menuitem);
+		}
+		switch (menuitem.getItemId()) {
+		case R.id.menu_getdirections:
+			launchGoogleMap(itemSelected);
+			return true;
+		case R.id.menu_delete:
+			boolean result = SqlHelper.getInstance(getApplication())
+					.deleteRememberItem(itemSelected);
+			if (result) {
+				showSucessDeleteCard(itemSelected);
+			}
 
-	            return true;
-	        default:
-                return super.onOptionsItemSelected(menuitem);
-	    }
+			return true;
+		default:
+			return super.onOptionsItemSelected(menuitem);
+		}
 	}
 }
- 
