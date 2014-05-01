@@ -3,6 +3,7 @@ package com.adrianavecchioli.findit;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.R;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -30,11 +31,11 @@ import com.google.android.glass.widget.CardScrollView;
 public class Find extends Activity implements Callback {
 
     private RememberItem itemSelected;
+    private static final String LIVE_CARD_TAG="livecardtag_selected";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ArrayList<String> voiceResults = getIntent().getExtras().getStringArrayList(RecognizerIntent.EXTRA_RESULTS);
-        String tag= voiceResults.get(0);
+        String tag=retrieveTagFromIntent(getIntent());
         RememberItem item=SqlHelper.getInstance(this).findRememberItem(tag);
         if(item!=null){
         	List<RememberItem> items=new ArrayList<RememberItem>();
@@ -51,6 +52,21 @@ public class Find extends Activity implements Callback {
         }
     }
 
+    /**
+     * Get Rememberitem tag from intent. tag should be set from livecard or by voice trigger
+     * @param intent
+     * @return tag 
+     */
+    private  String  retrieveTagFromIntent(Intent intent){
+    	String tag= getIntent().getStringExtra(LIVE_CARD_TAG);
+    	if(tag==null){
+    		ArrayList<String> voiceResults = getIntent().getExtras().getStringArrayList(RecognizerIntent.EXTRA_RESULTS);
+            tag= voiceResults.get(0);	
+    	}
+    	return tag;
+    	
+    	
+    }
 	private void displayFailureView() {
 		Card fail = new Card(this);
 		fail.setText(R.string.storefailhead);
