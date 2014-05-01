@@ -63,6 +63,18 @@ public class SqlHelper extends SQLiteOpenHelper {
               
         }
         
+        public RememberItem latestRememberItem(){
+        	Cursor cursor = db.query("remember", null,null, null, null, null,"desc","1");
+        	RememberItem item=null;
+        	if (cursor != null && cursor.moveToNext()) {
+        		 item = getRememberItem(cursor);
+        		 
+        	 }
+        	return item;
+
+              
+        }
+        
         public List<RememberItem> findAllRememberItem(){
         	 Cursor c = db.query("remember", null, null, null, null, null, null);
         	 List<RememberItem> items=new ArrayList<RememberItem>();
