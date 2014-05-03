@@ -61,12 +61,6 @@ public class Find extends Activity implements Callback {
 				displayFailureView();
 			}
 		}
-		RememberItem rememberItem = SqlHelper.getInstance(this)
-				.latestRememberItem();
-		if (rememberItem != null) {
-			RememberUtils.startLiveCardService(this, rememberItem);
-		}
-
 	}
 	private void displayFailureView() {
 		Card fail = new Card(this);

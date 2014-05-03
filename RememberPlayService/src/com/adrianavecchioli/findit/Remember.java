@@ -41,9 +41,6 @@ public class Remember extends Activity implements Callback{
 		setContentView(failView);
 		locationServiceConnector=new LocationServiceConnector();
 		locationServiceConnector.bind(this);
-		RememberItem rememberItem = SqlHelper.getInstance(this)
-				.latestRememberItem();
-		RememberUtils.startLiveCardService(this, rememberItem);
 	}
 	
 	@Override
@@ -142,13 +139,17 @@ public class Remember extends Activity implements Callback{
 		card.addImage(BitmapFactory.decodeFile(item.getImagePath()));
 		card.setFootnote(item.getTag());
 		setContentView(card.getView());
-		RememberUtils.sendAddRememberItemBroadcast(this, item);
 		Handler handler=new Handler(this);
-		handler.sendEmptyMessageDelayed(0, 3000);
+		Message message=Message.obtain();
+		message.obj=item;
+		handler.sendMessageDelayed(message, 3000);
 	}
 
 	@Override
 	public boolean handleMessage(Message msg) {
+		if(msg!=null && msg.obj instanceof RememberItem){
+			RememberUtils.sendAddRememberItemBroadcast(this, (RememberItem)msg.obj);
+		}
 		finish();
 		return false;
 	}
