@@ -3,12 +3,8 @@ package com.adrianavecchioli.findit;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.R;
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;

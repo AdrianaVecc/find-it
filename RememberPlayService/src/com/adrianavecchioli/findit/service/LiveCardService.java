@@ -1,27 +1,17 @@
 package com.adrianavecchioli.findit.service;
 
-import android.R;
-import android.R.menu;
+
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
-import android.os.Handler.Callback;
 import android.os.IBinder;
-import android.os.Message;
-import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.RemoteViews.RemoteView;
 
-import com.adrianavecchioli.findit.Find;
 import com.adrianavecchioli.findit.LiveCardMenu;
-import com.adrianavecchioli.findit.db.SqlHelper;
+import com.adrianavecchioli.findit.R;
 import com.adrianavecchioli.findit.domain.RememberItem;
 import com.adrianavecchioli.findit.receiver.AddBroadcastReceiver;
 import com.adrianavecchioli.findit.receiver.LiveCardUpdateListener;
-import com.google.android.glass.app.Card;
-import com.google.android.glass.app.Card.ImageLayout;
 import com.google.android.glass.timeline.LiveCard;
 import com.google.android.glass.timeline.LiveCard.PublishMode;
 
@@ -73,6 +63,7 @@ public class LiveCardService extends Service implements LiveCardUpdateListener{
 		RemoteViews mLiveCardView = new RemoteViews(getPackageName(),
             R.layout.remote_card_view_file);
         mLiveCardView.setTextViewText(R.id.tag_text,item2.getTag());
+        return mLiveCardView;
 	}
 	@Override
 	public void onRememberItemAdded(RememberItem item) {

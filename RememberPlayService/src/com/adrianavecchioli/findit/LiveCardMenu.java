@@ -1,17 +1,13 @@
 package com.adrianavecchioli.findit;
 
-import com.adrianavecchioli.findit.db.SqlHelper;
-import com.adrianavecchioli.findit.domain.RememberItem;
-import com.adrianavecchioli.findit.service.LiveCardService;
-import com.adrianavecchioli.findit.util.RememberUtils;
-
-import android.R;
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.adrianavecchioli.findit.domain.RememberItem;
+import com.adrianavecchioli.findit.service.LiveCardService;
+import com.adrianavecchioli.findit.util.RememberUtils;
 
 public class LiveCardMenu extends Activity {
 
