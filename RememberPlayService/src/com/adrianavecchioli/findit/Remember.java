@@ -144,7 +144,6 @@ public class Remember extends Activity implements Callback{
 		message.obj=item;
 		handler.sendMessageDelayed(message, 3000);
 	}
-
 	@Override
 	public boolean handleMessage(Message msg) {
 		if(msg!=null && msg.obj instanceof RememberItem){

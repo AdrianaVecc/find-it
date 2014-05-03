@@ -85,10 +85,20 @@ public class RememberUtils {
 		context.startService(service);
 	}
 	
+	public static void stopLiveCardService(Context context){
+		Intent service=new Intent(context,LiveCardService.class);
+		context.stopService(service);
+	}
+	
 	public static void sendAddRememberItemBroadcast(Context context,RememberItem item){
 		Intent brodacastIntent=new Intent(AddBroadcastReceiver.ACTION);
 		brodacastIntent.putExtra(LiveCardService.KEY_REMEMBER_ITEM, item);
 		context.startService(brodacastIntent);
+	}
+	public static void launchGoogleMap(Context context,RememberItem item) {
+		Location location = item.getLocation();
+		Intent intent = RememberUtils.getGeoIntentFromLocation(location);
+		context.startActivity(intent);
 	}
 	
 

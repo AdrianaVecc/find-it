@@ -76,6 +76,7 @@
      </intent-filter>
  </receiver>
  <service android:name=".service.LiveCardService"></service>
+ <activity android:name="LiveCardMenu"  android:theme="@style/MenuTheme"></activity>
        
     </application>
 

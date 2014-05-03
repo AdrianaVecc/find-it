@@ -15,6 +15,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViews.RemoteView;
 
 import com.adrianavecchioli.findit.Find;
+import com.adrianavecchioli.findit.LiveCardMenu;
 import com.adrianavecchioli.findit.db.SqlHelper;
 import com.adrianavecchioli.findit.domain.RememberItem;
 import com.adrianavecchioli.findit.receiver.AddBroadcastReceiver;
@@ -61,7 +62,7 @@ public class LiveCardService extends Service implements LiveCardUpdateListener{
     
 
 	private PendingIntent createIntentHandler(RememberItem item) {
-		Intent menuIntent = new Intent(this, Find.class);
+		Intent menuIntent = new Intent(this, LiveCardMenu.class);
         menuIntent.putExtra(KEY_REMEMBER_ITEM, item);
         menuIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
             Intent.FLAG_ACTIVITY_CLEAR_TASK);

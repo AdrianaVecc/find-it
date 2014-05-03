@@ -44,6 +44,7 @@
     <string name="object_saved"> Your object is saved!</string>
     <string name="menu_get_directions">Get directions</string>
     <string name="menu_delete">Delete</string>
+    <string name="menu_stop">Stop</string>
     <string name="object_delete">Your object has been deleted</string>
 
 </resources>

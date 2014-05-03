@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.R;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -81,11 +82,6 @@ public class Find extends Activity implements Callback {
 		return card;
 	}
 
-	private void launchGoogleMap(RememberItem item) {
-		Location location = item.getLocation();
-		Intent intent = RememberUtils.getGeoIntentFromLocation(location);
-		Find.this.startActivity(intent);
-	}
 
 	private void displayRememberItems(final List<RememberItem> items) {
 		List<Card> mCards = new ArrayList<Card>();
@@ -143,7 +139,7 @@ public class Find extends Activity implements Callback {
 		}
 		switch (menuitem.getItemId()) {
 		case R.id.menu_getdirections:
-			launchGoogleMap(itemSelected);
+			RememberUtils.launchGoogleMap(this,itemSelected);
 			return true;
 		case R.id.menu_delete:
 			boolean result = SqlHelper.getInstance(getApplication())

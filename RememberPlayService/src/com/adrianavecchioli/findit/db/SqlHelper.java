@@ -64,13 +64,11 @@ public class SqlHelper extends SQLiteOpenHelper {
         }
         
         public RememberItem latestRememberItem(){
-        	Cursor cursor = db.query("remember", null,null, null, null, null,"desc","1");
-        	RememberItem item=null;
+        	Cursor cursor = db.query("remember", null,null, null, null, null,"added_date desc","1");
         	if (cursor != null && cursor.moveToNext()) {
-        		 item = getRememberItem(cursor);
-        		 
+        		return  getRememberItem(cursor);
         	 }
-        	return item;
+        	return null;
 
               
         }
