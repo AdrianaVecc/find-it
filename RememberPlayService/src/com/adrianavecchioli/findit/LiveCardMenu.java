@@ -18,8 +18,8 @@ public class LiveCardMenu extends Activity {
 	@Override
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
-		RememberItem item=getIntent().getParcelableExtra(LiveCardService.KEY_REMEMBER_ITEM);
-		if(item!=null){
+		itemSelected=getIntent().getParcelableExtra(LiveCardService.KEY_REMEMBER_ITEM);
+		if(itemSelected!=null){
 			openOptionsMenu();	
 		}
 	}

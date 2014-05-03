@@ -9,6 +9,7 @@ import android.widget.RemoteViews;
 
 import com.adrianavecchioli.findit.LiveCardMenu;
 import com.adrianavecchioli.findit.R;
+import com.adrianavecchioli.findit.db.SqlHelper;
 import com.adrianavecchioli.findit.domain.RememberItem;
 import com.adrianavecchioli.findit.receiver.AddBroadcastReceiver;
 import com.adrianavecchioli.findit.receiver.LiveCardUpdateListener;
@@ -25,6 +26,7 @@ public class LiveCardService extends Service implements LiveCardUpdateListener{
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		RememberItem item=intent.getExtras().getParcelable(KEY_REMEMBER_ITEM);
+		item=SqlHelper.getInstance(this).latestRememberItem();
 		if(item!=null){
 			mLiveCard = new LiveCard(this,LIVE_CARD_TAG);
 			updateLiveCardWithRememberItem(mLiveCard,item);
