@@ -41,6 +41,8 @@ public class Remember extends Activity implements Callback{
 		setContentView(failView);
 		locationServiceConnector=new LocationServiceConnector();
 		locationServiceConnector.bind(this);
+		
+		RememberUtils.startLiveCardService(this, null);
 	}
 	
 	@Override
@@ -129,6 +131,7 @@ public class Remember extends Activity implements Callback{
 		item.setAddedDate(addedDate);
 		
 		SqlHelper.getInstance(this).saveRememberItem(item);
+		RememberUtils.sendAddRememberItemBroadcast(this,item);
 		showSucessCard(item);
 		
 	}
@@ -146,9 +149,6 @@ public class Remember extends Activity implements Callback{
 	}
 	@Override
 	public boolean handleMessage(Message msg) {
-		if(msg!=null && msg.obj instanceof RememberItem){
-			RememberUtils.sendAddRememberItemBroadcast(this, (RememberItem)msg.obj);
-		}
 		finish();
 		return false;
 	}

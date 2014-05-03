@@ -25,9 +25,11 @@ public class LiveCardService extends Service implements LiveCardUpdateListener{
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		RememberItem item=intent.getExtras().getParcelable(KEY_REMEMBER_ITEM);
-		mLiveCard = new LiveCard(this,LIVE_CARD_TAG);
-		updateLiveCardWithRememberItem(mLiveCard,item);
-		mLiveCard.publish(PublishMode.REVEAL);
+		if(item!=null){
+			mLiveCard = new LiveCard(this,LIVE_CARD_TAG);
+			updateLiveCardWithRememberItem(mLiveCard,item);
+			mLiveCard.publish(PublishMode.REVEAL);
+		}
 		addBroadcastReceiver=new AddBroadcastReceiver(this);
 		registerReceiver(addBroadcastReceiver, AddBroadcastReceiver.getIntentFilter());
 		return START_STICKY;
